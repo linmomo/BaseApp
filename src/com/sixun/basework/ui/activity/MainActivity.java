@@ -22,6 +22,9 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		initViews();
 	}
 
+	/**
+	 * 初始化view
+	 */
 	public void initViews() {
 		fv.find(R.id.button1).setOnClickListener(this);
 		fv.find(R.id.button2).setOnClickListener(this);
