@@ -116,7 +116,6 @@ public class DateUtils {
         return getTime(getCurrentTimeInLong(),format);
     }
     
-
 	/**
 	 * 格式化输出日期 
 	 * 
@@ -296,8 +295,7 @@ public class DateUtils {
 	 * @return 格式化的时间
 	 */
 	public static String formatStringTime(String date){
-		String2Date(date, yyyyMMddHHmmss);
-		return null;
+		return formatDateTime(String2Date(date, yyyyMMddHHmmss));
 	}
 	
 	/**
