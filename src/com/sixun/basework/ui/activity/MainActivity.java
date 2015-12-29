@@ -2,6 +2,7 @@ package com.sixun.basework.ui.activity;
 
 import com.sixun.basework.R;
 import com.sixun.basework.ui.BaseActivity;
+import com.sixun.basework.utils.DateUtils;
 
 import android.os.Bundle;
 import android.view.View;
@@ -43,22 +44,24 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		String time = "";
 		switch (v.getId()) {
 		case R.id.button1:
-			tv.setText(1);
+			time="2015-12-29 17:10";
 			break;
 		case R.id.button2:
-
+			time="2015-12-29 10:45";
 			break;
 		case R.id.button3:
-
+			time="2015-12-28 13:45";
 			break;
 		case R.id.button4:
-
+			time="2015-12-27 13:45";
 			break;
 		default:
 			break;
 		}
+		tv.setText(DateUtils.formatDateTime(DateUtils.String2Date(time, "yyyy-MM-dd HH:mm")));
 	}
 
 	class Person {
