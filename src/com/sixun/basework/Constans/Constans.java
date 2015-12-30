@@ -2,6 +2,11 @@ package com.sixun.basework.Constans;
 
 import android.os.Environment;
 
+/**
+ * 常量
+ * @author Administrator
+ *
+ */
 public class Constans {
 
 	/**
