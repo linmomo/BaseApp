@@ -1,19 +1,10 @@
 package com.sixun.basework.utils;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.provider.Settings;
@@ -21,7 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 /**
- * 手机状态工具类 主要包括网络、蓝牙、屏幕亮度、飞行模式、音量等
+ * 手机状态工具类
+ *  主要包括网络、蓝牙、屏幕亮度、飞行模式、音量等
  * 
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -33,7 +25,7 @@ public class DeviceStatusUtils {
 	private DeviceStatusUtils() {
 		throw new Error("Do not need instantiate!");
 	}
-
+	
 	/**
 	 * 获取系统屏幕亮度模式的状态，需要WRITE_SETTINGS权限
 	 * 
@@ -358,68 +350,6 @@ public class DeviceStatusUtils {
 				ringVloume, AudioManager.FLAG_PLAY_SOUND);
 	}
 	
-    /**
-     * 得到CPU核心数
-     *
-     * @return CPU核心数
-     */
-    public static int getNumCores() {
-        try {
-            File dir = new File("/sys/devices/system/cpu/");
-            File[] files = dir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    if (Pattern.matches("cpu[0-9]", pathname.getName())) {
-                        return true;
-                    }
-                    return false;
-                }
-            });
-            return files.length;
-        } catch (Exception e) {
-            return 1;
-        }
-    }
-    
-    /**
-     * 获取应用运行的最大内存
-     *
-     * @return 最大内存
-     */
-    public static long getMaxMemory() {
-        return Runtime.getRuntime().maxMemory() / 1024;
-    }
-    
-    /**
-     * 获取系统中所有的应用
-     *
-     * @param context 上下文
-     * @return 应用信息List
-     */
-    public static List<PackageInfo> getAllApps(Context context) {
-
-        List<PackageInfo> apps = new ArrayList<PackageInfo>();
-        PackageManager pManager = context.getPackageManager();
-        List<PackageInfo> paklist = pManager.getInstalledPackages(0);
-        for (int i = 0; i < paklist.size(); i++) {
-            PackageInfo pak = paklist.get(i);
-            if ((pak.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) <= 0) {
-                // customs applications
-                apps.add(pak);
-            }
-        }
-        return apps;
-    }
-
-    /**
-     * 获取手机系统SDK版本
-     *
-     * @return 如API 17 则返回 17
-     */
-    public static int getSDKVersion() {
-        return android.os.Build.VERSION.SDK_INT;
-    }
-
 	// /**
 	// * 找不到设备异常
 	// */

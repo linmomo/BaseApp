@@ -12,7 +12,7 @@ import android.view.animation.TranslateAnimation;
 /**
  * 动画工具类
  *
- * @author zhenguo
+ * @author lin
  */
 public final class AnimationUtils {
 
@@ -240,7 +240,7 @@ public final class AnimationUtils {
      *
      * @param durationMillis 持续时间
      * @param animationListener 动画监听器
-     * @return
+     * @return 返回一个缩小的动画
      */
     public static ScaleAnimation getLessenScaleAnimation(long durationMillis, AnimationListener animationListener) {
         ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f, ScaleAnimation.RELATIVE_TO_SELF, ScaleAnimation.RELATIVE_TO_SELF);
@@ -255,7 +255,7 @@ public final class AnimationUtils {
      * 获取一个缩小动画
      *
      * @param durationMillis 持续时间
-     * @return
+     * @return 返回一个缩小的动画
      */
     public static ScaleAnimation getLessenScaleAnimation(long durationMillis) {
         return getLessenScaleAnimation(durationMillis,null);
@@ -265,7 +265,7 @@ public final class AnimationUtils {
      * 获取一个缩小动画
      *
      * @param animationListener 动画监听器
-     * @return
+     * @return 返回一个缩小的动画
      */
     public static ScaleAnimation getLessenScaleAnimation(AnimationListener animationListener) {
         return getLessenScaleAnimation(DEFAULT_ANIMATION_DURATION, animationListener);
@@ -276,7 +276,7 @@ public final class AnimationUtils {
      *
      * @param durationMillis  持续时间
      * @param animationListener 动画监听器
-     * @return
+     * @return 返回一个放大的效果
      */
     public static ScaleAnimation getAmplificationAnimation(long durationMillis, AnimationListener animationListener) {
         ScaleAnimation scaleAnimation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, ScaleAnimation.RELATIVE_TO_SELF, ScaleAnimation.RELATIVE_TO_SELF);
@@ -291,7 +291,7 @@ public final class AnimationUtils {
      * 获取一个放大动画
      *
      * @param durationMillis  持续时间
-     * @return
+     * @return 返回一个放大的效果
      */
     public static ScaleAnimation getAmplificationAnimation(long durationMillis) {
         return getLessenScaleAnimation(durationMillis,null);
@@ -301,7 +301,7 @@ public final class AnimationUtils {
      * 获取一个放大动画
      *
      * @param animationListener  动画监听器
-     * @return
+     * @return 返回一个放大的效果
      */
     public static ScaleAnimation getAmplificationAnimation(AnimationListener animationListener) {
         return getLessenScaleAnimation(DEFAULT_ANIMATION_DURATION, animationListener);

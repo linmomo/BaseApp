@@ -19,6 +19,14 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 拨打电话 -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
+    
 
     <uses-sdk
         android:minSdkVersion="8"

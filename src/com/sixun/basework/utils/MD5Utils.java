@@ -6,11 +6,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
 
 /**
- * 加密与解密的工具类
+ * MD5加密与解密的工具类
+ * 防篡改
  *
  * @author lin
  */
@@ -76,18 +75,5 @@ public final class MD5Utils {
         String result = new String(cipher.doFinal(StringUtils
                 .hexStringToByteArray(data)), "utf8");
         return result;
-    }
-    
-    /**
-     * 返回可逆算法DES的密钥
-     *
-     * @param key 前8字节将被用来生成密钥。
-     * @return 生成的密钥
-     * @throws Exception
-     */
-    public static Key getDESKey(byte[] key) throws Exception {
-        DESKeySpec des = new DESKeySpec(key);
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
-        return keyFactory.generateSecret(des);
     }
 }

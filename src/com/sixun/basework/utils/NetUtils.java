@@ -1,7 +1,5 @@
 package com.sixun.basework.utils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

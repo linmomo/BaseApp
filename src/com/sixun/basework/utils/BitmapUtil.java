@@ -285,12 +285,12 @@ public final class BitmapUtil {
     //------------------各个途径获得指定大小的bitmap-----------------------------
 
 	/**
-	 * 获得bitmap
+	 * 根据文件路径获得bitmap
 	 * 
 	 * @param imgPath 图片路径
 	 * @return
 	 */
-	 public static Bitmap getBitmap(String imgPath) {  
+	 public static Bitmap getBitmapFromPath(String pathName) {  
 	       // Get bitmap through image path  
 	       BitmapFactory.Options newOpts = new BitmapFactory.Options();  
 	       newOpts.inJustDecodeBounds = false;  
@@ -298,59 +298,10 @@ public final class BitmapUtil {
 	       newOpts.inInputShareable = true; //。当系统内存不够时候图片自动被回收  
 	       // Do not compress  
 	       newOpts.inSampleSize = 1;  
-	       newOpts.inPreferredConfig = Config.RGB_565;  
-	       return BitmapFactory.decodeFile(imgPath, newOpts);  
-	   }	
-	/**
-	 * 加载本地图片，文件路径
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public static Bitmap getLoacalBitmap(String url) {
-		if (url == null) {
-			return null;
-		}
-		try {
-			FileInputStream fis = new FileInputStream(url);
-			return BitmapFactory.decodeStream(fis); // /把流转化为Bitmap图片
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	/**
-	 * 获取本地图片drawable
-	 * 
-	 * @param iconPath
-	 *            图片地址
-	 * @return
-	 */
-	public static Drawable getLocalDrawable(String iconPath) {
-		if (iconPath == null) {
-			return null;
-		}
-		File path = new File(Environment.getExternalStorageDirectory(),iconPath);
-		InputStream is = null;
-		try {
-			is = new FileInputStream(path);
-			if (is != null) {
-				return IOFormat.inputStream2Drawable(is);
-			}
-		} catch (FileNotFoundException e) {
-			L.e("用户头像地址无效: " + e.toString());
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
+	       newOpts.inPreferredConfig = Config.RGB_565;
+	       return BitmapFactory.decodeFile(pathName, newOpts);  
+	   }
+	 
 	
 	 /**
      * 获取一个指定大小的bitmap来自输入流,带padding

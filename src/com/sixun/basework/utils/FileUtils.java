@@ -73,7 +73,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String getFileName() {
-		String name = DateUtils.getCurrentTimeFormat();
+		String name = DateUtils.getCurrentTimeInString();
 		String[] names = name.replaceAll(" ", "#").split("#");
 		String dateStr = names[0].replaceAll("-", "");
 		String timeStr = names[1].replaceAll(":", "");

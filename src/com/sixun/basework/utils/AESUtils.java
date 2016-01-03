@@ -10,7 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * 非对称加密算法
- * @author Administrator
+ * 更快，兼容设备，安全级别高；
+ * @author lin
  *
  */
 public class AESUtils {

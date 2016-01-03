@@ -3,52 +3,41 @@ package com.sixun.basework.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
-
 import javax.security.auth.x500.X500Principal;
-
-import com.sixun.basework.Constans.Constans;
 
 /**
  * 
- * APP相关信息工具类及对手机系统操作和内部信息
+ * APP相关信息工具类
+ * 获取版本信息
  * 安装卸载
- * cpu核心，最大内存，可用内存
- * 查看清理后台和服务
  * Runtime状态  是否Dalvik ART Debug 模式
- * 获取已安装app列表
  * 获取sdk版本及应用签名
  */
 public final class AppUtils {
 
-	private static final boolean DEBUG = Constans.DEBUG;
-    private static final String TAG = "AppUtils";
     private final static X500Principal DEBUG_DN = new X500Principal(
             "CN=Android Debug,O=Android,C=US");
 
@@ -92,6 +81,37 @@ public final class AppUtils {
         }
         return verName;
     }
+    
+    /**
+     * Retrieve launcher activity name of the application from the context
+     * 获取当前应用名称
+     *
+     * @param context The context of the application package.
+     * @return launcher activity name of this application. From the
+     * "android:name" attribute.
+     */
+	public static String getLauncherClassName(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        // To limit the components this Intent will resolve to, by setting an
+        // explicit package name.
+        intent.setPackage(context.getPackageName());
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        // All Application must have 1 Activity at least.
+        // Launcher activity must be found!
+        ResolveInfo info = packageManager
+                .resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        // get a ResolveInfo containing ACTION_MAIN, CATEGORY_LAUNCHER
+        // if there is no Activity which has filtered by CATEGORY_DEFAULT
+        if (info == null) {
+            info = packageManager.resolveActivity(intent, 0);
+        }
+        //////////////////////另一种实现方式//////////////////////
+        // ComponentName componentName = context.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName()).getComponent();
+        // return componentName.getClassName();
+        //////////////////////另一种实现方式//////////////////////
+        return info.activityInfo.name;
+    }
 
     /**
      * 安装apk
@@ -132,6 +152,16 @@ public final class AppUtils {
         Uri packageURI = Uri.parse("package:" + packageName);
         intent.setData(packageURI);
         context.startActivity(intent);
+    }
+    
+    /**
+     * 应用程序是否运行在平板电脑中.
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     /**
@@ -278,74 +308,6 @@ public final class AppUtils {
             e.printStackTrace();
         }
         return "";
-    }
-
-    /**
-     * 清理后台进程与服务
-     *
-     * @param context 应用上下文对象context
-     * @return 被清理的数量
-     */
-    public static int gc(Context context) {
-        long i = getDeviceUsableMemory(context);
-        int count = 0; // 清理掉的进程数
-        ActivityManager am = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        // 获取正在运行的service列表
-        List<RunningServiceInfo> serviceList = am.getRunningServices(100);
-        if (serviceList != null)
-            for (RunningServiceInfo service : serviceList) {
-                if (service.pid == android.os.Process.myPid())
-                    continue;
-                try {
-                    android.os.Process.killProcess(service.pid);
-                    count++;
-                } catch (Exception e) {
-                    e.getStackTrace();
-                }
-            }
-
-        // 获取正在运行的进程列表
-        List<RunningAppProcessInfo> processList = am.getRunningAppProcesses();
-        if (processList != null)
-            for (RunningAppProcessInfo process : processList) {
-                // 一般数值大于RunningAppProcessInfo.IMPORTANCE_SERVICE的进程都长时间没用或者空进程了
-                // 一般数值大于RunningAppProcessInfo.IMPORTANCE_VISIBLE的进程都是非可见进程，也就是在后台运行着
-                if (process.importance > RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
-                    // pkgList 得到该进程下运行的包名
-                    String[] pkgList = process.pkgList;
-                    for (String pkgName : pkgList) {
-                        if (DEBUG) {
-                            Log.d(TAG, "======正在杀死包名：" + pkgName);
-                        }
-                        try {
-                            am.killBackgroundProcesses(pkgName);
-                            count++;
-                        } catch (Exception e) { // 防止意外发生
-                            e.getStackTrace();
-                        }
-                    }
-                }
-            }
-        if (DEBUG) {
-        	Log.e(TAG, "清理了" + (getDeviceUsableMemory(context) - i) + "M内存");
-        }
-        return count;
-    }
-
-    /**
-     * 获取设备的可用内存大小
-     *
-     * @param context 应用上下文对象context
-     * @return 当前内存大小
-     */
-    public static int getDeviceUsableMemory(Context context) {
-        ActivityManager am = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        MemoryInfo mi = new MemoryInfo();
-        am.getMemoryInfo(mi);
-        // 返回当前系统的可用内存
-        return (int) (mi.availMem / (1024 * 1024));
     }
     
 

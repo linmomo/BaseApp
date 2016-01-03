@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.view.View;
@@ -219,15 +217,98 @@ public final class ViewUtils {
         }
         return descendedViewList;
     }
+    
+    /**
+     * 手动测量布局大小
+     *
+     * @param view 被测量的布局
+     * @param width 布局默认宽度
+     * @param height 布局默认高度
+     * 示例： measureView(view, ViewGroup.LayoutParams.MATCH_PARENT,
+     * ViewGroup.LayoutParams.WRAP_CONTENT);
+     */
+    public static void measureView(View view, int width, int height) {
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params == null) {
+            params = new ViewGroup.LayoutParams(width, height);
+        }
+        int mWidth = ViewGroup.getChildMeasureSpec(0, 0, params.width);
+
+        int mHeight;
+        int tempHeight = params.height;
+        if (tempHeight > 0) {
+            mHeight = View.MeasureSpec.makeMeasureSpec(tempHeight,
+                    View.MeasureSpec.EXACTLY);
+        }
+        else {
+            mHeight = View.MeasureSpec.makeMeasureSpec(0,
+                    View.MeasureSpec.UNSPECIFIED);
+        }
+        view.measure(mWidth, mHeight);
+    }
+
+    //*****设置外边距相关函数*******************************************************************************
+
 
     /**
-     * 应用程序是否运行在平板电脑中.
+     * 设置View的左侧外边距
      *
-     * @param context
-     * @return
+     * @param view 要设置外边距的View
+     * @param left 左侧外边距
      */
-    public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    public static void setMarginLeft(View view, int left) {
+        setMargins(view, left, 0, 0, 0);
+    }
+
+
+    /**
+     * 设置View的顶部外边距
+     *
+     * @param view 要设置外边距的View
+     * @param top 顶部外边距
+     */
+    public static void setMarginTop(View view, int top) {
+        setMargins(view, 0, top, 0, 0);
+    }
+
+
+    /**
+     * 设置View的右侧外边距
+     *
+     * @param view 要设置外边距的View
+     * @param right 右侧外边距
+     */
+    public static void setMarginRight(View view, int right) {
+        setMargins(view, 0, 0, right, 0);
+    }
+
+
+    /**
+     * 设置View的底部外边距
+     *
+     * @param view 要设置外边距的View
+     * @param bottom 底部外边距
+     */
+    public static void setMarginBottom(View view, int bottom) {
+        setMargins(view, 0, 0, 0, bottom);
+    }
+
+    /**
+     * 设置View的外边距(Margins)
+     *
+     * @param view 要设置外边距的View
+     * @param left 左侧外边距
+     * @param top 顶部外边距
+     * @param right 右侧外边距
+     * @param bottom 底部外边距
+     */
+    public static void setMargins(View view, int left, int top, int right, int bottom) {
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view
+                    .getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            view.requestLayout();       //请求重绘
+        }
     }
 
 }
