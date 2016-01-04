@@ -1,4 +1,4 @@
-package com.sixun.basework;
+package com.sixun.basework.common;
 
 import java.io.File;
 import java.io.FileOutputStream;

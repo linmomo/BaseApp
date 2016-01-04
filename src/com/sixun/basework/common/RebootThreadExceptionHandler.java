@@ -1,4 +1,4 @@
-package com.sixun.basework;
+package com.sixun.basework.common;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;

@@ -7,6 +7,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.sixun.basework.Constans.Constans;
+import com.sixun.basework.common.RebootThreadExceptionHandler;
 import com.sixun.basework.utils.MyUtils;
 
 import android.app.Application;

@@ -1,4 +1,4 @@
-package com.sixun.basework;
+package com.sixun.basework.common;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

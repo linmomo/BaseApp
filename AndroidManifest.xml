@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <!-- 注册自定义静态广播接收器 开机启动工具类需要此配置 -->
-        <receiver android:name="com.sixun.basework.StartAppReceiver" />
+        <receiver android:name="com.sixun.basework.common.StartAppReceiver" />
     </application>
 
 </manifest>

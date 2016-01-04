@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * 用来计算显示的时间是多久之前的！
+ * 时间人性化显示转换
  */
 public class TransitionTime {
 
@@ -29,9 +29,10 @@ public class TransitionTime {
 
     /**
      * 返回开始时间与结束时间的时间差
+     * 问题：几周前不起作用
      * @param startTime 开始时间
      * @param endTime 结束时间
-     * @return
+     * @return 几秒，几分，几天，几小时，几周
      */
     public static String twoDateDistance(String startTime,String endTime) {
     	
@@ -53,41 +54,54 @@ public class TransitionTime {
                return null;
            }
            
+           //计算时间差
            long timeLong = endDate.getTime() - startDate.getTime();
            if (timeLong <= 0) {
                return "刚刚";
            }
-           else if (timeLong < 60 * 1000) {
+           else if (timeLong < 60 * 1000) {//一分钟内
                return timeLong / 1000 + "秒前";
            }
-           else if (timeLong < 60 * 60 * 1000) {
+           else if (timeLong < 60 * 60 * 1000) {//一小时内
                timeLong = timeLong / 1000 / 60;
                return timeLong + "分钟前";
            }
-           else if (timeLong < 60 * 60 * 24 * 1000) {
+           else if (timeLong < 60 * 60 * 24 * 1000) {//一天内
                timeLong = timeLong / 60 / 60 / 1000;
                return timeLong + "小时前";
            }
-           else if (timeLong < 60 * 60 * 24 * 1000 * 7) {
+           else if (timeLong < 60 * 60 * 24 * 1000 * 7) {//一周内 
                timeLong = timeLong / 1000 / 60 / 60 / 24;
                return timeLong + "天前";
            }
-           else if (timeLong < 60 * 60 * 24 * 1000 * 7 * 4) {
+           else {//一周之外
                timeLong = timeLong / 1000 / 60 / 60 / 24 / 7;
                return timeLong + "周前";
            }
-           else {
-               timeLong = timeLong / 1000 / 60 / 60 / 24;
-               return timeLong + "天前";
-           }
+//           else if (timeLong > 60 * 60 * 24 * 1000 * 7 * 4) {//四周内  2419200000
+//               timeLong = timeLong / 1000 / 60 / 60 / 24 / 7;
+//
+//               return timeLong + "周前";
+//           }
+//           else {
+//               timeLong = timeLong / 1000 / 60 / 60 / 24;
+//               return timeLong + "天前";
+//           }
     }
     
+    /**
+     * UTM转换成简单日期描述，如三周前，上午，昨天等
+     * 
+     * @param time 需要转换的时间
+     * @param isShowWeek 是否采用周形式显示  true 显示为3周前，false 则显示为时间格式mm-dd
+     * @return
+     */
     public static String getTimeDesc(String time,boolean isShowWeek) {
 		return getTimeDesc(DateUtils.str2Date(time).getTime(), isShowWeek);
     }
 
     /**
-     * UTM转换成日期描述，如三周前，上午，昨天等
+     * UTM转换成简单日期描述，如三周前，上午，昨天等
      *
      * @param milliseconds milliseconds
      * @param isShowWeek 是否采用周的形式显示  true 显示为3周前，false 则显示为时间格式mm-dd
@@ -133,7 +147,7 @@ public class TransitionTime {
             } else {
                 sb.append(" " + DateToWeek(milliseconds) +" ");
             }
-        } else {// 一周之前
+        } else {// 一周之后
             if(isShowWeek){
                 sb.append((day%7==0?(day/7):(day/7+1)) + "周前");
             }else{
@@ -147,9 +161,15 @@ public class TransitionTime {
 
     }
     
+    /**
+     * UTM转换成简单日期描述，如三周前，上午，昨天等
+     * 
+     * @param time 需要转换的时间
+     * @param isShowWeek 是否采用周形式显示  true 显示为3周前，false 则显示为时间格式mm-dd
+     * @return
+     */
     public static String getTimeDesc(String time) {
-
-        return getTimeDesc(DateUtils.str2Date(time).getTime(),true);
+		return getTimeDesc(DateUtils.str2Date(time).getTime());
     }
 
     /**
@@ -163,12 +183,18 @@ public class TransitionTime {
         return getTimeDesc(milliseconds,true);
     }
     
+    /**
+     * UTM转换成带具体描述的日期
+     *
+     * @param time  待转换日期
+     * @return   UTM转换成带描述的日期
+     */
     public static String getDisplayTimeAndDesc(String time){
     	return getDisplayTimeAndDesc(DateUtils.str2Date(time).getTime());
     }  
 
     /**
-     * UTM转换成带描述的日期
+     * UTM转换成带具体描述的日期
      *
      * @param milliseconds  milliseconds
      * @return   UTM转换成带描述的日期
@@ -237,9 +263,19 @@ public class TransitionTime {
 
         return WEEK[dayIndex - 1];
     }
+    
+    /**
+     * 将时间与系统时间的间隔转换成描述性字符串，如2天前，3月1天后等。
+     * @param time 相对的时间字符串
+     * @param isFull 是否全部显示 true 全部显示 false 简单显示
+     * @return  将时间间隔转换成描述性字符串，如2天前，3月1天后等。
+     */
+    public static String diffDateAsDesc(String time, boolean isFull){
+		return diffDateAsDesc(DateUtils.str2Date(time),isFull);
+    }
 
     /**
-     * 将时间间隔转换成描述性字符串，如2天前，3月1天后等。
+     * 将时间与系统时间的间隔转换成描述性字符串，如2天前，3月1天后等。
      * @param toDate 相对的日期
      * @param isFull 是否全部显示 true 全部显示 false 简单显示
      * @return  将时间间隔转换成描述性字符串，如2天前，3月1天后等。
