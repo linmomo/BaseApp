@@ -1,10 +1,10 @@
-================================
+
 # Utils
 这个是我自己平常工作搜集和整理的常用工具类
 
 ### License
 
-            Copyright 2015 lazy
+           Copyright 2015 lin
 
             Licensed under the Apache License, Version 2.0 (the "License");
             you may not use this file except in compliance with the License.
