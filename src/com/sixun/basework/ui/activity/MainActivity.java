@@ -2,6 +2,7 @@ package com.sixun.basework.ui.activity;
 
 import com.sixun.basework.R;
 import com.sixun.basework.ui.BaseActivity;
+import com.sixun.basework.utils.ToastUtils;
 
 import android.os.Bundle;
 import android.view.View;
@@ -25,13 +26,11 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		initViews();
 	}
-
-	/**
-	 * 初始化view
-	 */
-	public void initViews() {
+	
+	@Override
+	public void initView() {
+		super.initView();
 		fv.find(R.id.button1).setOnClickListener(this);
 		fv.find(R.id.button2).setOnClickListener(this);
 		fv.find(R.id.button3).setOnClickListener(this);
@@ -39,7 +38,6 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		tv = fv.textView(R.id.textView1);
 		img = fv.imageView(R.id.imageView1);
 	}
-
 
 	@Override
 	public void onClick(View v) {

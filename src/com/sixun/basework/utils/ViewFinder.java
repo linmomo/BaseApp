@@ -7,6 +7,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +18,9 @@ import android.widget.TextView;
  */
 public class ViewFinder {
 
+	/**
+	 * find包装接口
+	 */
     private static interface FindWrapper {
 
         View findViewById(int id);
@@ -24,6 +28,9 @@ public class ViewFinder {
         Resources getResources();
     }
 
+    /**
+	 * 窗口对象包装类
+	 */
     private static class WindowWrapper implements FindWrapper {
 
         private final Window window;
@@ -41,6 +48,9 @@ public class ViewFinder {
         }
     }
 
+    /**
+	 * view对象包装类
+	 */
     private static class ViewWrapper implements FindWrapper {
 
         private final View view;
@@ -62,6 +72,7 @@ public class ViewFinder {
 
     /**
      * 初始化findview基于view
+     * 用于自定义视图，fragment
      * 
      * @param view
      */
@@ -71,6 +82,7 @@ public class ViewFinder {
 
     /**
      * 初始化findview基于window
+     * 用于dialog，popwindow
      *
      * @param window
      */
@@ -97,6 +109,26 @@ public class ViewFinder {
     public <V extends View> V find(final int id) {
         return (V) wrapper.findViewById(id);
     }
+    
+    /**
+     * 获得 TextView
+     *
+     * @param id
+     * @return text view
+     */
+    public TextView textView(final int id) {
+        return find(id);
+    }
+    
+    /**
+     * 获得 Button
+     *
+     * @param id
+     * @return Button
+     */
+    public Button btn(final int id) {
+        return find(id);
+    }
 
     /**
      * 获得ImageView
@@ -119,14 +151,60 @@ public class ViewFinder {
     }
 
     /**
-     * 获得 TextView
+     * 注册监听，根据控件id
      *
      * @param id
-     * @return text view
+     * @param listener
+     * @return view registered with listener
      */
-    public TextView textView(final int id) {
-        return find(id);
+    public View setOnClick(final int id, final OnClickListener listener) {
+        View clickable = find(id);
+        clickable.setOnClickListener(listener);
+        return clickable;
     }
+
+    /**
+     * Register runnable to be invoked when child view with given id is clicked
+     *
+     * @param id
+     * @param runnable
+     * @return view registered with runnable
+     */
+    public View setOnClick(final int id, final Runnable runnable) {
+        return setOnClick(id, new OnClickListener() {
+
+            public void onClick(View v) {
+                runnable.run();
+            }
+        });
+    }
+
+    /**
+     * 批量注册监听，根据控件id数组
+     *
+     * @param ids
+     * @param listener
+     */
+    public void setOnClick(final OnClickListener listener, final int... ids) {
+        for (int id : ids)
+            find(id).setOnClickListener(listener);
+    }
+
+    /**
+     * Register runnable to be invoked when all given child view ids are clicked
+     *
+     * @param ids
+     * @param runnable
+     */
+    public void onClick(final Runnable runnable, final int... ids) {
+    	setOnClick(new OnClickListener() {
+
+            public void onClick(View v) {
+                runnable.run();
+            }
+        }, ids);
+    }
+
 
     /**
      * 直接根据TextView控件id设置文本
@@ -152,62 +230,7 @@ public class ViewFinder {
     public TextView setText(final int id, final int content) {
         return setText(id, wrapper.getResources().getString(content));
     }
-
-    /**
-     * 注册监听，根据控件id
-     *
-     * @param id
-     * @param listener
-     * @return view registered with listener
-     */
-    public View onClick(final int id, final OnClickListener listener) {
-        View clickable = find(id);
-        clickable.setOnClickListener(listener);
-        return clickable;
-    }
-
-    /**
-     * Register runnable to be invoked when child view with given id is clicked
-     *
-     * @param id
-     * @param runnable
-     * @return view registered with runnable
-     */
-    public View onClick(final int id, final Runnable runnable) {
-        return onClick(id, new OnClickListener() {
-
-            public void onClick(View v) {
-                runnable.run();
-            }
-        });
-    }
-
-    /**
-     * 注册监听，根据控件id数组
-     *
-     * @param ids
-     * @param listener
-     */
-    public void onClick(final OnClickListener listener, final int... ids) {
-        for (int id : ids)
-            find(id).setOnClickListener(listener);
-    }
-
-    /**
-     * Register runnable to be invoked when all given child view ids are clicked
-     *
-     * @param ids
-     * @param runnable
-     */
-    public void onClick(final Runnable runnable, final int... ids) {
-        onClick(new OnClickListener() {
-
-            public void onClick(View v) {
-                runnable.run();
-            }
-        }, ids);
-    }
-
+    
     /**
      * 设置图片，根据Imagview控件id
      *
@@ -273,8 +296,7 @@ public class ViewFinder {
     public void onCheck(final Runnable runnable, final int... ids) {
         onCheck(new OnCheckedChangeListener() {
 
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
                 runnable.run();
             }
         }, ids);

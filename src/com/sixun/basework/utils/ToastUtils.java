@@ -1,10 +1,6 @@
 package com.sixun.basework.utils;
 
-
 import com.sixun.basework.R;
-
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,75 +10,36 @@ import android.widget.Toast;
 
 /**
  * Toast工具类
- * @author Administrator
+ * @author lin
  *
  */
 public class ToastUtils {
 	
 	private static Toast mToast;
+	private static TextView tv_content;
 	
 	private ToastUtils() {};
 
 	/**
 	 * 自定义Toast
-	 * @param message
+	 * @param String message
 	 * @param  duration 
 	 */
-	public static void showCustomToast(Context context,String message,int duration) {
-		
+	private static void showCustomToast(Context context,String message,int duration) {
 		if (mToast == null) {
 			mToast = new Toast(context);
+			LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View v = inflate.inflate(R.layout.toast_layout, null);
+			tv_content = (TextView) v.findViewById(R.id.toast_content);
+			mToast.setDuration(duration);
+			// mToast.setGravity(Gravity.BOTTOM, 0, 400);
+			mToast.setGravity(Gravity.BOTTOM, 0, 100);
+			mToast.setView(v);
+			tv_content.setText(message);
+		}else{
+			tv_content.setText(message);
 		}
-
-		LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflate.inflate(R.layout.toast_layout, null);
-		TextView tv = (TextView) v.findViewById(R.id.toast_content);
-		tv.setText(message);
-
-		mToast.setView(v);
-		mToast.setDuration(Toast.LENGTH_LONG);
-		// mToast.setGravity(Gravity.BOTTOM, 0, 400);
-		mToast.setGravity(Gravity.BOTTOM, 0, 100);
 		mToast.show();
-	}
-	
-	/**
-	 * 自定义Toast
-	 * @param message
-	 * @param  duration 
-	 */
-	public static void showCustomToast(Context context,int message,int duration) {
-		
-		if (mToast == null) {
-			mToast = new Toast(context);
-		}
-
-		LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflate.inflate(R.layout.toast_layout, null);
-		TextView tv = (TextView) v.findViewById(R.id.toast_content);
-		tv.setText(message);
-
-		mToast.setView(v);
-		mToast.setDuration(duration);
-		// mToast.setGravity(Gravity.BOTTOM, 0, 400);
-		mToast.setGravity(Gravity.BOTTOM, 0, 100);
-		mToast.show();
-	}
-	
-	/**
-	 * 短时间显示自定义Toast
-	 * @param message
-	 */
-	public static void customShort(Context context,String message){
-		showCustomToast(context,message, Toast.LENGTH_SHORT);
-	}
-	
-	/**
-	 * 短时间显示自定义Toast
-	 * @param message
-	 */
-	public static void customShort(Context context,int message){
-		showCustomToast(context,message, Toast.LENGTH_SHORT);
 	}
 	
 	/**
@@ -94,11 +51,19 @@ public class ToastUtils {
 	}
 	
 	/**
-	 * 长时间显示自定义Toast
+	 * 短时间显示自定义Toast
 	 * @param message
 	 */
-	public static void customLong(Context context,int message){
-		showCustomToast(context,message, Toast.LENGTH_LONG);
+	public static void customShort(Context context,String message){
+		showCustomToast(context,message, Toast.LENGTH_SHORT);
+	}
+	
+	/**
+	 * 自定义时间显示自定义Toast
+	 * @param message
+	 */
+	public static void customShow(Context context,String message,int duration){
+		showCustomToast(context,message, duration);
 	}
 	
 	/**
