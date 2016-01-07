@@ -2,8 +2,6 @@ package com.sixun.basework.ui.activity;
 
 import com.sixun.basework.R;
 import com.sixun.basework.ui.BaseActivity;
-import com.sixun.basework.utils.ToastUtils;
-
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
