@@ -9,6 +9,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.sixun.basework.Constans.Constans;
 import com.sixun.basework.common.RebootThreadExceptionHandler;
 import com.sixun.basework.utils.MyUtils;
+import com.sixun.basework.utils.SPUtils;
 
 import android.app.Application;
 import android.content.Context;
@@ -28,9 +29,11 @@ public class App extends Application {
 		instance = this;
 		// 初始化工具类
 		MyUtils.initUtils(this);
-		makeAppFolder();
+		//初始化sp工具类
+		SPUtils.initSp(this);
 		// 初始化uil
 		initImageLoader(getApplicationContext());
+		makeAppFolder();
 		 // 异常处理
 //        BaseCrashHandler handler = BaseCrashHandler.getInstance();
 //        handler.init(this);

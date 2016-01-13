@@ -2,9 +2,6 @@ package com.sixun.basework.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,10 +27,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader.TileMode;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Build;
-import android.os.Environment;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -53,17 +48,17 @@ import android.view.View;
  * 注意是流的形式,不是Bitmap的形式,当图片以Bitmap的形式存在时,
  * 其占用的内存会瞬间变大, 我试过500K文件形式的图片加载到内存,以Bitmap形式存在时,
  * 占用内存将近10M,当然这个增大的倍数并不是固定的
- * 
- *<p/>
+ * <p/>
+ *
  * <b>图片压缩总结</b> 
  * 总结来看，图片有三种存在形式：硬盘上时是file，网络传输时是stream，
-	内存中是stream或bitmap，所谓的质量压缩(compress)，它其实只能实现对file的影
-	响，你可以把一个file转成bitmap再转成file，或者直接将一个bitmap转成file时，
-	这个最终的file是被压缩过的，但是中间的bitmap并没有被压缩（或者说几乎没有被压缩，我不确定），
- 	因为bigmap在内存中的大小是按像素计算的，也就是width * height，对于质量压缩，
-	并不会改变图片的像素，所以就算质量被压缩了，但是bitmap在内存的占有率还是没变小，
-	但你做成file时，它确实变小了；
-	而尺寸压缩(Options)由于是减小了图片的像素，所以它直接对bitmap产生了影响，当然最终的file也是相对的变小了；
+ *	内存中是stream或bitmap，所谓的质量压缩(compress)，它其实只能实现对file的影
+ *	响，你可以把一个file转成bitmap再转成file，或者直接将一个bitmap转成file时，
+ *	这个最终的file是被压缩过的，但是中间的bitmap并没有被压缩（或者说几乎没有被压缩，我不确定），
+ * 	因为bitmap在内存中的大小是按像素计算的，也就是width * height，对于质量压缩，
+ *	并不会改变图片的像素，所以就算质量被压缩了，但是bitmap在内存的占有率还是没变小，
+ *	但你做成file时，它确实变小了；
+ *	而尺寸压缩(Options)由于是减小了图片的像素，所以它直接对bitmap产生了影响，当然最终的file也是相对的变小了；
  */
 public final class BitmapUtil {
 
@@ -127,10 +122,10 @@ public final class BitmapUtil {
      *  
      * @param imgPath 图片路径 
      * @param pixelW target pixel of width  800f
-     * @param pixelH target pixel of height  400f
+     * @param pixelH target pixel of height  480f
      * @return 
      */  
-    public static Bitmap ratio(String imgPath, float pixelW, float pixelH) {  
+    public static Bitmap optionsImage(String imgPath, float pixelW, float pixelH) {  
         BitmapFactory.Options newOpts = new BitmapFactory.Options();    
         // 开始读入图片，此时把options.inJustDecodeBounds 设回true，即只读边不读内容  
         newOpts.inJustDecodeBounds = true;  
@@ -168,7 +163,7 @@ public final class BitmapUtil {
      * @param pixelH target pixel of height 
      * @return 
      */  
-    public static Bitmap ratio(Bitmap image, float pixelW, float pixelH) {  
+    public static Bitmap optionsImage(Bitmap image, float pixelW, float pixelH) {  
         ByteArrayOutputStream os = new ByteArrayOutputStream();  
         image.compress(Bitmap.CompressFormat.JPEG, 100, os);  
         if( os.toByteArray().length / 1024>1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出      
@@ -229,7 +224,7 @@ public final class BitmapUtil {
      * 图片质量压缩，指定压缩后大小 （使用compress的方法）
      *  <p/>
      * <b>说明</b> 如果bitmap本身的大小小于maxSize，则不作处理
-     * 
+     *  <p/>
      * @param image 
      * @param maxSize 目标将被压缩成比该尺寸更小。单位KB 
      * @throws IOException  

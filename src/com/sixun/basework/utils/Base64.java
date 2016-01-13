@@ -4,11 +4,13 @@ import java.util.Arrays;
 
 /**
  * 加密解密
- * @author 林
+ * 
+ * @author lin
  *
  */
 public class Base64 {
-	private static final char[] CA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	private static final char[] CA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+			.toCharArray();
 	private static final int[] IA = new int[256];
 	static {
 		Arrays.fill(IA, -1);
@@ -51,6 +53,7 @@ public class Base64 {
 
 	/**
 	 * 加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -109,7 +112,9 @@ public class Base64 {
 
 	/**
 	 * 解密
-	 * @param data 加密字节数组
+	 * 
+	 * @param data
+	 *            加密字节数组
 	 * @return
 	 */
 	public static byte[] decode(byte[] data) {
@@ -159,7 +164,9 @@ public class Base64 {
 
 	/**
 	 * 解密
-	 * @param data 加密字符串
+	 * 
+	 * @param data
+	 *            加密字符串
 	 * @return
 	 */
 	public static byte[] decode(String data) {
@@ -209,7 +216,9 @@ public class Base64 {
 
 	/**
 	 * 丢弃不是base64的字节数组
-	 * @param data 字节数组
+	 * 
+	 * @param data
+	 *            字节数组
 	 * @return
 	 */
 	private static byte[] discardNonBase64Bytes(byte[] data) {
@@ -227,7 +236,9 @@ public class Base64 {
 
 	/**
 	 * 丢弃不是base64的字节数组
-	 * @param data 字符串
+	 * 
+	 * @param data
+	 *            字符串
 	 * @return
 	 */
 	private static String discardNonBase64Chars(String data) {
@@ -243,8 +254,10 @@ public class Base64 {
 
 	/**
 	 * 是否base64字节数组
-	 * @param b 字节数组
-	 * @return 
+	 * 
+	 * @param b
+	 *            字节数组
+	 * @return
 	 */
 	private static boolean isValidBase64Byte(byte b) {
 		if (b == '=') {
@@ -257,42 +270,57 @@ public class Base64 {
 		return true;
 	}
 
-	/** Encodes a raw byte array into a BASE64 <code>String</code> representation i accordance with RFC 2045.
-	 * @param sArr The bytes to convert. If <code>null</code> or length 0 an empty array will be returned.
-	 * @param lineSep Optional "\r\n" after 76 characters, unless end of file.<br>
-	 * No line separator will be in breach of RFC 2045 which specifies max 76 per line but will be a
-	 * little faster.
+	/**
+	 * Encodes a raw byte array into a BASE64 <code>String</code> representation
+	 * i accordance with RFC 2045.
+	 * 
+	 * @param sArr
+	 *            The bytes to convert. If <code>null</code> or length 0 an
+	 *            empty array will be returned.
+	 * @param lineSep
+	 *            Optional "\r\n" after 76 characters, unless end of file.<br>
+	 *            No line separator will be in breach of RFC 2045 which
+	 *            specifies max 76 per line but will be a little faster.
 	 * @return A BASE64 encoded array. Never <code>null</code>.
 	 */
-	public final static String encodeToString(byte[] sArr, boolean lineSep)
-	{
-		// Reuse char[] since we can't create a String incrementally anyway and StringBuffer/Builder would be slower.
+	public final static String encodeToString(byte[] sArr, boolean lineSep) {
+		// Reuse char[] since we can't create a String incrementally anyway and
+		// StringBuffer/Builder would be slower.
 		return new String(encodeToChar(sArr, lineSep));
 	}
 
-	/** Encodes a raw byte array into a BASE64 <code>char[]</code> representation i accordance with RFC 2045.
-	 * @param sArr The bytes to convert. If <code>null</code> or length 0 an empty array will be returned.
-	 * @param lineSep Optional "\r\n" after 76 characters, unless end of file.<br>
-	 * No line separator will be in breach of RFC 2045 which specifies max 76 per line but will be a
-	 * little faster.
+	/**
+	 * Encodes a raw byte array into a BASE64 <code>char[]</code> representation
+	 * i accordance with RFC 2045.
+	 * 
+	 * @param sArr
+	 *            The bytes to convert. If <code>null</code> or length 0 an
+	 *            empty array will be returned.
+	 * @param lineSep
+	 *            Optional "\r\n" after 76 characters, unless end of file.<br>
+	 *            No line separator will be in breach of RFC 2045 which
+	 *            specifies max 76 per line but will be a little faster.
 	 * @return A BASE64 encoded array. Never <code>null</code>.
 	 */
-	public final static char[] encodeToChar(byte[] sArr, boolean lineSep)
-	{
+	public final static char[] encodeToChar(byte[] sArr, boolean lineSep) {
 		// Check special case
 		int sLen = sArr != null ? sArr.length : 0;
 		if (sLen == 0)
 			return new char[0];
 
-		int eLen = (sLen / 3) * 3;              // Length of even 24-bits.
-		int cCnt = ((sLen - 1) / 3 + 1) << 2;   // Returned character count
-		int dLen = cCnt + (lineSep ? (cCnt - 1) / 76 << 1 : 0); // Length of returned array
+		int eLen = (sLen / 3) * 3; // Length of even 24-bits.
+		int cCnt = ((sLen - 1) / 3 + 1) << 2; // Returned character count
+		int dLen = cCnt + (lineSep ? (cCnt - 1) / 76 << 1 : 0); // Length of
+																// returned
+																// array
 		char[] dArr = new char[dLen];
 
 		// Encode even 24-bits
 		for (int s = 0, d = 0, cc = 0; s < eLen;) {
-			// Copy next three bytes into lower 24 bits of int, paying attension to sign.
-			int i = (sArr[s++] & 0xff) << 16 | (sArr[s++] & 0xff) << 8 | (sArr[s++] & 0xff);
+			// Copy next three bytes into lower 24 bits of int, paying attension
+			// to sign.
+			int i = (sArr[s++] & 0xff) << 16 | (sArr[s++] & 0xff) << 8
+					| (sArr[s++] & 0xff);
 
 			// Encode the int into four chars
 			dArr[d++] = CA[(i >>> 18) & 0x3f];
@@ -312,7 +340,8 @@ public class Base64 {
 		int left = sLen - eLen; // 0 - 2.
 		if (left > 0) {
 			// Prepare the int
-			int i = ((sArr[eLen] & 0xff) << 10) | (left == 2 ? ((sArr[sLen - 1] & 0xff) << 2) : 0);
+			int i = ((sArr[eLen] & 0xff) << 10)
+					| (left == 2 ? ((sArr[sLen - 1] & 0xff) << 2) : 0);
 
 			// Set last four chars
 			dArr[dLen - 4] = CA[i >> 12];

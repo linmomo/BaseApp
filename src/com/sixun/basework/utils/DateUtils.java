@@ -157,15 +157,15 @@ public class DateUtils {
 	    }
 	 
 	 /**
-		 * 根据格式化字符串 获得当前系统时间 
-		 * 
-		 * @param format
-		 * @return
-		 */
-		public static String getCurrentTimeFormat(String format) {
+	 * 根据格式化字符串 获得当前系统时间 
+	 * 
+	 * @param format
+	 * @return
+	 */
+	 public static String getCurrentTimeFormat(String format) {
 			return getTime(getCurrentTimeInLong(), format);
 		}
-
+	 
 	/**
 	 * 格式化毫秒时间为字符串
 	 * 

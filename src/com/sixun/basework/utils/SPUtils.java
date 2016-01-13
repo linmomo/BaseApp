@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
 
 /**
  * SharedPreferences工具类
- * @author Administrator
+ * @author lin
  *
  */
 public class SPUtils {
