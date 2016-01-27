@@ -3,7 +3,6 @@ package com.sixun.basework.utils;
 /**
  * 颜色工具类 包括常用的色值
  *
- * @author jingle1267@163.com
  */
 public final class Colors {
 

@@ -13,8 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * 获取市场号
- * @author lin
+ * 获取渠道市场号
  *
  */
 public class ChannelUtil {

@@ -1,8 +1,8 @@
 package com.sixun.basework.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.HashMap;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
@@ -10,7 +10,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -41,43 +40,17 @@ public class MyUtils {
 	public static void initUtils(Application app) {
 		mApplicationContent = app.getApplicationContext();
 	}
-	
+
 	 /**
-     * 调用系统发短信界面
-     *
-     * @param activity    Activity
-     * @param phoneNumber 手机号码
-     * @param smsContent  短信内容
-     */
-    public static void sendMessage(Context activity,String phoneNumber, String smsContent) {
-        if (phoneNumber == null || phoneNumber.length() < 4) {
-            return;
-        }
-        Uri uri = Uri.parse("smsto:" + phoneNumber);
-        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-        it.putExtra("sms_body", smsContent);
-        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(it);
-
-    }
-
-    /**
-     * 调用系统打电话界面
-     * 需要CALL_PHONE权限
-     *
-     * @param context     上下文
-     * @param phoneNumber 手机号码
-     */
-    public static void callPhones(Context context,String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.length() < 1) {
-            return;
-        }
-        Uri uri = Uri.parse("tel:" + phoneNumber);
-        Intent intent = new Intent(Intent.ACTION_CALL, uri);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-    
+	   * 四舍五入保留几位小数
+	   *
+	   * @param number  原数
+	   * @param decimal 保留几位小数
+	   * @return 四舍五入后的值
+	   */
+	  public static BigDecimal round(double number, int decimal){
+	    return new BigDecimal(number).setScale(decimal, BigDecimal.ROUND_HALF_UP);
+	  }	
     
     /**
      * 判断是否为连击
@@ -157,26 +130,13 @@ public class MyUtils {
 	}
 
 	/**
-	 * 价格后如有小数点则不显示
-	 * 
-	 * @param num
-	 * @return
-	 */
-	public static String doubleTrans(double num) {
-		if (num % 1.0 == 0) {
-			return String.valueOf((long) num);
-		}
-		return String.valueOf(num);
-	}
-
-	/**
 	 * 经纬度测距
 	 * 
 	 * @param jingdu1
 	 * @param weidu1
 	 * @param jingdu2
 	 * @param weidu2
-	 * @return
+	 * @return 两个坐标的距离
 	 */
 	public static double distance(double jingdu1, double weidu1,
 			double jingdu2, double weidu2) {
@@ -192,28 +152,6 @@ public class MyUtils {
 		sb2 = Math.sin(b / 2.0);
 		d = 2* R* Math.asin(Math.sqrt(sa2 * sa2 + Math.cos(weidu1)* Math.cos(weidu2) * sb2 * sb2));
 		return d;
-	}
-
-
-	/**
-	 * 从Assets里读文本文件
-	 * 
-	 * @return
-	 */
-	public static String getStringFromAssets(String fileName) {
-		try {
-			InputStreamReader inputReader = new InputStreamReader(
-					mApplicationContent.getResources().getAssets()
-							.open(fileName));
-			BufferedReader bufReader = new BufferedReader(inputReader);
-			String line = "";
-			String Result = "";
-			while ((line = bufReader.readLine()) != null)Result += line;
-			return Result;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "";
 	}
 
 	/**

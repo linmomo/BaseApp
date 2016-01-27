@@ -7,7 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * 时间人性化显示转换
+ * 时间转换显示类
+ * 人性化显示时间
  */
 public class TransitionTime {
 

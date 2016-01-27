@@ -4,7 +4,6 @@ import android.util.Log;
 
 /**
  * 根据卡号前六位获取银行卡信息
- * @author Administrator
  *
  */
 public class BankInfo {

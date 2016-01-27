@@ -27,10 +27,10 @@ public final class ResourceUtils {
     }
 
     /**
-     * 使用ACCESS_STREAMING方式获得的资源。 这提供了访问文件与应用程序捆绑在一起,作为资产 -- 这是, 文件放置在“资源”目录.
+     * 从Assets里读文本文件
      *
      * @param context
-     * @param 文件名来打开该资源的名称。这个名字可以是分层的。.
+     * @param fileName 资源名称。
      * @return
      */
     public static String geFileFromAssets(Context context, String fileName) {

@@ -2,9 +2,10 @@ package com.sixun.basework.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Locale;
-
-import android.text.TextUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 字符串操作工具包 结合android.text.TextUtils使用
@@ -18,15 +19,63 @@ public final class StringUtils{
     private StringUtils() {
         throw new Error("Do not need instantiate!");
     }
+    
+    /**
+     * 判断给定的字符串是否为null或者是空的
+     *
+     * @param string 给定的字符串
+     */
+    public static boolean isEmpty(String string) {
+        return string == null || "".equals(string.trim());
+    }
 
     /**
-     * 如果字符串是空或0-length返回true。
+     * 判断给定的字符串是否不为null且不为空
      *
-     * @param 
-     * @return 
+     * @param string 给定的字符串
      */
-    public static boolean isEmpty(CharSequence str) {
-        return TextUtils.isEmpty(str);
+    public static boolean isNotEmpty(String string) {
+        return !isEmpty(string);
+    }
+
+    /**
+     * 判断给定的字符串数组中的所有字符串是否都为null或者是空的
+     *
+     * @param strings 给定的字符串
+     */
+    public static boolean isEmpty(String... strings) {
+        boolean result = true;
+        for (String string : strings) {
+            if (isNotEmpty(string)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 判断给定的字符串数组中是否全部都不为null且不为空
+     *
+     * @param strings 给定的字符串数组
+     * @return 是否全部都不为null且不为空
+     */
+    public static boolean isNotEmpty(String... strings) {
+        boolean result = true;
+        for (String string : strings) {
+            if (isEmpty(string)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 如果字符串是null或者空就返回""
+     */
+    public static String filterEmpty(String string) {
+        return StringUtils.isNotEmpty(string) ? string : "";
     }
     
     /**
@@ -41,6 +90,24 @@ public final class StringUtils{
      */
     public static boolean isEquals(Object actual, Object expected) {
         return actual == expected || (actual == null ? expected == null : actual.equals(expected));
+    }
+    
+    /**
+     * 获取字符串长度
+     *
+     * <pre>
+     * length(null) = 0;
+     * length(\"\") = 0;
+     * length(\"abc\") = 3;
+     * </pre>
+     *
+     * @param str str
+     * @return if str is null or empty, return 0, else return {@link
+     * CharSequence#length()}.
+     */
+    public static int length(String str) {
+
+        return str == null ? 0 : str.trim().length();
     }
 
     /**
@@ -94,83 +161,472 @@ public final class StringUtils{
     }
     
     /**
-     * 编码为utf-8
+     * 将字符串转为html
      * 
-     * <pre>
-     * utf8Encode(null)        =   null
-     * utf8Encode("")          =   "";
-     * utf8Encode("aa")        =   "aa";
-     * utf8Encode("啊啊啊啊")   = "%E5%95%8A%E5%95%8A%E5%95%8A%E5%95%8A";
-     * </pre>
+     * @param href 字符串
+     * @return 返回一个html
+     */
+    public static String getHrefInnerHtml(String href) {
+
+        if (isEmpty(href)) {
+            return "";
+        }
+
+        String hrefReg = ".*<[\\s]*a[\\s]*.*>(.+?)<[\\s]*/a[\\s]*>.*";
+        Pattern hrefPattern = Pattern.compile(hrefReg,
+                Pattern.CASE_INSENSITIVE);
+        Matcher hrefMatcher = hrefPattern.matcher(href);
+        if (hrefMatcher.matches()) {
+            return hrefMatcher.group(1);
+        }
+        return href;
+    }
+
+    /**
+     * 将html转为字符串
      * 
-     * @param str
-     * @return
-     * @throws UnsupportedEncodingException if an error occurs
+     * @param source 字符串
+     * @return 返回htmL到字符串
+     */
+    public static String htmlEscapeCharsToString(String source) {
+
+        return StringUtils.isEmpty(source)
+               ? source
+               : source.replaceAll("&lt;", "<")
+                       .replaceAll("&gt;", ">")
+                       .replaceAll("&amp;", "&")
+                       .replaceAll("&quot;", "\"");
+    }
+
+
+    /**
+     * 全角转半角
+     * 
+     * @param s str
+     * @return String
+     */
+    public static String fullWidthToHalfWidth(String s) {
+
+        if (isEmpty(s)) {
+            return s;
+        }
+
+        char[] source = s.toCharArray();
+        for (int i = 0; i < source.length; i++) {
+            if (source[i] == 12288) {
+                source[i] = ' ';
+                // } else if (source[i] == 12290) {
+                // source[i] = '.';
+            }
+            else if (source[i] >= 65281 && source[i] <= 65374) {
+                source[i] = (char) (source[i] - 65248);
+            }
+            else {
+                source[i] = source[i];
+            }
+        }
+        return new String(source);
+    }
+
+
+    /**
+     * 半角转全角
+     * 
+     * @param s 字符串
+     * @return 返回的数值
+     */
+    public static String halfWidthToFullWidth(String s) {
+
+        if (isEmpty(s)) {
+            return s;
+        }
+
+        char[] source = s.toCharArray();
+        for (int i = 0; i < source.length; i++) {
+            if (source[i] == ' ') {
+                source[i] = (char) 12288;
+                // } else if (source[i] == '.') {
+                // source[i] = (char)12290;
+            }
+            else if (source[i] >= 33 && source[i] <= 126) {
+                source[i] = (char) (source[i] + 65248);
+            }
+            else {
+                source[i] = source[i];
+            }
+        }
+        return new String(source);
+    }
+    
+    /**
+     * 将字符串编码为 utf-8
+     *
+     * @param str 字符串
+     * @return 返回一个utf8的字符串
      */
     public static String utf8Encode(String str) {
+
         if (!isEmpty(str) && str.getBytes().length != str.length()) {
             try {
                 return URLEncoder.encode(str, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("UnsupportedEncodingException occurred. ", e);
+                throw new RuntimeException(
+                        "UnsupportedEncodingException occurred. ", e);
             }
         }
         return str;
     }
-    
-    /**
-     * 第一个字母大写
-     * 
-     * <pre>
-     * capitalizeFirstLetter(null)     =   null;
-     * capitalizeFirstLetter("")       =   "";
-     * capitalizeFirstLetter("2ab")    =   "2ab"
-     * capitalizeFirstLetter("a")      =   "A"
-     * capitalizeFirstLetter("ab")     =   "Ab"
-     * capitalizeFirstLetter("Abc")    =   "Abc"
-     * </pre>
-     * 
-     * @param str
-     * @return
-     */
-    public static String capitalizeFirstLetter(String str) {
-        if (isEmpty(str)) {
-            return str;
-        }
 
-        char c = str.charAt(0);
-        return (!Character.isLetter(c) || Character.isUpperCase(c)) ? str : new StringBuilder(str.length())
-                .append(Character.toUpperCase(c)).append(str.substring(1)).toString();
+    /**
+     * 将字符串中的特殊字符串替换为""
+     * @param str 资源
+     * @return 特殊字符串切换
+     */
+
+    public static String replaceBlanktihuan(String str) {
+
+        String dest = "";
+        if (str != null) {
+            Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+            Matcher m = p.matcher(str);
+            dest = m.replaceAll("");
+        }
+        return dest;
     }
 
+
     /**
-     * 将给定的字符串中所有给定的关键字标红
+     * 在给定的字符串中，用新的字符替换所有旧的字符
      *
-     * @param sourceString 给定的字符串
-     * @param keyword      给定的关键字
-     * @return 返回的是带Html标签的字符串，在使用时要通过Html.fromHtml()转换为Spanned对象再传递给TextView对象
+     * @param string 给定的字符串
+     * @param oldchar 旧的字符
+     * @param newchar 新的字符
+     * @return 替换后的字符串
      */
-    public static String keywordMadeRed(String sourceString, String keyword) {
-        String result = "";
-        if (sourceString != null && !"".equals(sourceString.trim())) {
-            if (keyword != null && !"".equals(keyword.trim())) {
-                result = sourceString.replaceAll(keyword,
-                        "<font color=\"red\">" + keyword + "</font>");
-            } else {
-                result = sourceString;
+    public static String replace(String string, char oldchar, char newchar) {
+        char chars[] = string.toCharArray();
+        for (int w = 0; w < chars.length; w++) {
+            if (chars[w] == oldchar) {
+                chars[w] = newchar;
+                break;
+            }
+        }
+        return new String(chars);
+    }
+
+
+    /**
+     * 把给定的字符串用给定的字符分割
+     *
+     * @param string 给定的字符串
+     * @param ch 给定的字符
+     * @return 分割后的字符串数组
+     */
+    public static String[] split(String string, char ch) {
+        ArrayList<String> stringList = new ArrayList<String>();
+        char chars[] = string.toCharArray();
+        int nextStart = 0;
+        for (int w = 0; w < chars.length; w++) {
+            if (ch == chars[w]) {
+                stringList.add(new String(chars, nextStart, w - nextStart));
+                nextStart = w + 1;
+                if (nextStart ==
+                        chars.length) {    //当最后一位是分割符的话，就再添加一个空的字符串到分割数组中去
+                    stringList.add("");
+                }
+            }
+        }
+        if (nextStart <
+                chars.length) {    //如果最后一位不是分隔符的话，就将最后一个分割符到最后一个字符中间的左右字符串作为一个字符串添加到分割数组中去
+            stringList.add(new String(chars, nextStart,
+                    chars.length - 1 - nextStart + 1));
+        }
+        return stringList.toArray(new String[stringList.size()]);
+    }
+
+
+    /**
+     * 计算给定的字符串的长度，计算规则是：一个汉字的长度为2，一个字符的长度为1
+     *
+     * @param string 给定的字符串
+     * @return 长度
+     */
+    public static int countLength(String string) {
+        int length = 0;
+        char[] chars = string.toCharArray();
+        for (int w = 0; w < string.length(); w++) {
+            char ch = chars[w];
+            if (ch >= '\u0391' && ch <= '\uFFE5') {
+                length++;
+                length++;
+            }
+            else {
+                length++;
+            }
+        }
+        return length;
+    }
+
+//    private static char[] getChars(char[] chars, int startIndex) {
+//        int endIndex = startIndex + 1;
+//        //如果第一个是数字
+//        if (Character.isDigit(chars[startIndex])) {
+//            //如果下一个是数字
+//            while (endIndex < chars.length &&
+//                    Character.isDigit(chars[endIndex])) {
+//                endIndex++;
+//            }
+//        }
+//        char[] resultChars = new char[endIndex - startIndex];
+//        System.arraycopy(chars, startIndex, resultChars, 0, resultChars.length);
+//        return resultChars;
+//    }
+
+
+    /**
+     * 是否全是数字
+     */
+    public static boolean isAllDigital(char[] chars) {
+        boolean result = true;
+        for (int w = 0; w < chars.length; w++) {
+            if (!Character.isDigit(chars[w])) {
+                result = false;
+                break;
             }
         }
         return result;
     }
 
     /**
-     * 为给定的字符串添加HTML红色标记，当使用Html.fromHtml()方式显示到TextView 的时候其将是红色的
+     * 删除给定字符串中所有的旧的字符
+     *
+     * @param string 源字符串
+     * @param ch 要删除的字符
+     * @return 删除后的字符串
+     */
+    public static String removeChar(String string, char ch) {
+        StringBuffer sb = new StringBuffer();
+        for (char cha : string.toCharArray()) {
+            if (cha != '-') {
+                sb.append(cha);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 删除给定字符串中给定位置处的字符
+     *
+     * @param string 给定字符串
+     * @param index 给定位置
+     */
+    public static String removeChar(String string, int index) {
+        String result = null;
+        char[] chars = string.toCharArray();
+        if (index == 0) {
+            result = new String(chars, 1, chars.length - 1);
+        }
+        else if (index == chars.length - 1) {
+            result = new String(chars, 0, chars.length - 1);
+        }
+        else {
+            result = new String(chars, 0, index) +
+                    new String(chars, index + 1, chars.length - index);
+            ;
+        }
+        return result;
+    }
+
+
+    /**
+     * 删除给定字符串中给定位置处的字符
+     *
+     * @param string 给定字符串
+     * @param index 给定位置
+     * @param ch 如果同给定位置处的字符相同，则将给定位置处的字符删除
+     */
+    public static String removeChar(String string, int index, char ch) {
+        String result = null;
+        char[] chars = string.toCharArray();
+        if (chars.length > 0 && chars[index] == ch) {
+            if (index == 0) {
+                result = new String(chars, 1, chars.length - 1);
+            }
+            else if (index == chars.length - 1) {
+                result = new String(chars, 0, chars.length - 1);
+            }
+            else {
+                result = new String(chars, 0, index) +
+                        new String(chars, index + 1, chars.length - index);
+                ;
+            }
+        }
+        else {
+            result = string;
+        }
+        return result;
+    }
+
+
+    /**
+     * 对给定的字符串进行空白过滤
      *
      * @param string 给定的字符串
-     * @return
+     * @return 如果给定的字符串是一个空白字符串，那么返回null；否则返回本身。
      */
-    public static String addHtmlRedFlag(String string) {
-        return "<font color=\"red\">" + string + "</font>";
+    public static String filterBlank(String string) {
+        if ("".equals(string)) {
+            return null;
+        }
+        else {
+            return string;
+        }
     }
+
+
+    /**
+     * 将给定字符串中给定的区域的字符转换成小写
+     *
+     * @param str 给定字符串中
+     * @param beginIndex 开始索引（包括）
+     * @param endIndex 结束索引（不包括）
+     * @return 新的字符串
+     */
+    public static String toLowerCase(String str, int beginIndex, int endIndex) {
+        return str.replaceFirst(str.substring(beginIndex, endIndex),
+                str.substring(beginIndex, endIndex)
+                   .toLowerCase(Locale.getDefault()));
+    }
+
+
+    /**
+     * 将给定字符串中给定的区域的字符转换成大写
+     *
+     * @param str 给定字符串中
+     * @param beginIndex 开始索引（包括）
+     * @param endIndex 结束索引（不包括）
+     * @return 新的字符串
+     */
+    public static String toUpperCase(String str, int beginIndex, int endIndex) {
+        return str.replaceFirst(str.substring(beginIndex, endIndex),
+                str.substring(beginIndex, endIndex)
+                   .toUpperCase(Locale.getDefault()));
+    }
+    
+    /**
+     * 将给定字符串的首字母转为小写
+     *
+     * @param str 给定字符串
+     * @return 新的字符串
+     */
+    public static String firstLetterToLowerCase(String str) {
+        return toLowerCase(str, 0, 1);
+    }
+
+
+    /**
+     * 将给定字符串的首字母转为大写
+     *
+     * @param str 给定字符串
+     * @return 新的字符串
+     */
+    public static String firstLetterToUpperCase(String str) {
+        return toUpperCase(str, 0, 1);
+    }
+
+    /**
+     * 判断给定的字符串是否以一个特定的字符串开头，忽略大小写
+     *
+     * @param sourceString 给定的字符串
+     * @param newString 一个特定的字符串
+     */
+    public static boolean startsWithIgnoreCase(String sourceString, String newString) {
+        int newLength = newString.length();
+        int sourceLength = sourceString.length();
+        if (newLength == sourceLength) {
+            return newString.equalsIgnoreCase(sourceString);
+        }
+        else if (newLength < sourceLength) {
+            char[] newChars = new char[newLength];
+            sourceString.getChars(0, newLength, newChars, 0);
+            return newString.equalsIgnoreCase(String.valueOf(newChars));
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * 判断给定的字符串是否以一个特定的字符串结尾，忽略大小写
+     *
+     * @param sourceString 给定的字符串
+     * @param newString 一个特定的字符串
+     */
+    public static boolean endsWithIgnoreCase(String sourceString, String newString) {
+        int newLength = newString.length();
+        int sourceLength = sourceString.length();
+        if (newLength == sourceLength) {
+            return newString.equalsIgnoreCase(sourceString);
+        }
+        else if (newLength < sourceLength) {
+            char[] newChars = new char[newLength];
+            sourceString.getChars(sourceLength - newLength, sourceLength,
+                    newChars, 0);
+            return newString.equalsIgnoreCase(String.valueOf(newChars));
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    /**
+     * 检查字符串长度，如果字符串的长度超过maxLength，就截取前maxLength个字符串并在末尾拼上appendString
+     */
+    public static String checkLength(String string, int maxLength, String appendString) {
+        if (string.length() > maxLength) {
+            string = string.substring(0, maxLength);
+            if (appendString != null) {
+                string += appendString;
+            }
+        }
+        return string;
+    }
+
+
+    /**
+     * 检查字符串长度，如果字符串的长度超过maxLength，就截取前maxLength个字符串并在末尾拼上…
+     */
+    public static String checkLength(String string, int maxLength) {
+        return checkLength(string, maxLength, "…");
+    }
+    
+	/**
+	 * 为给定的字符串添加HTML红色标记，当使用Html.fromHtml()方式显示到TextView 的时候其将是红色的
+	 * @param string 给定的字符串
+	 * @return
+	 */
+	public static String addHtmlRedFlag(String string){
+		return "<font color=\"red\">"+string+"</font>";
+	}
+	
+	/**
+	 * 将给定的字符串中所有给定的关键字标红
+	 * @param sourceString 给定的字符串
+	 * @param keyword 给定的关键字
+	 * @return 返回的是带Html标签的字符串，在使用时要通过Html.fromHtml()转换为Spanned对象再传递给TextView对象
+	 */
+	public static String keywordMadeRed(String sourceString, String keyword){
+		String result = "";
+		if(sourceString != null && !"".equals(sourceString.trim())){
+			if(keyword != null && !"".equals(keyword.trim())){
+				result = sourceString.replaceAll(keyword, "<font color=\"red\">"+keyword+"</font>"); 
+			}else{
+				result = sourceString;
+			}
+		}
+		return result;
+	}
 
 }

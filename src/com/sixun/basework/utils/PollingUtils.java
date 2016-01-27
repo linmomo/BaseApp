@@ -1,7 +1,6 @@
 package com.sixun.basework.utils;
 
 import com.sixun.basework.Constans.Constans;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;

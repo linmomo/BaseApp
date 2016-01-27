@@ -8,6 +8,49 @@ import java.util.regex.Pattern;
  *
  */
 public final class RegUtils {
+	
+	/**
+	 * 匹配全网IP的正则表达式
+	 */
+	public static final String IP_REGEX = "^((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))$";
+	
+	/**
+	 * 匹配手机号码的正则表达式
+	 * <br>支持130——139、150——153、155——159、180、183、185、186、188、189号段
+	 */
+	public static final String PHONE_NUMBER_REGEX = "^1{1}(3{1}\\d{1}|5{1}[012356789]{1}|8{1}[035689]{1})\\d{8}$";
+	
+	/**
+	 * 匹配邮箱的正则表达式
+	 * <br>"www."可省略不写
+	 */
+	public static final String EMAIL_REGEX = "^(www\\.)?\\w+@\\w+(\\.\\w+)+$";
+	
+	/**
+	 * 匹配汉字的正则表达式，个数限制为一个或多个
+	 */
+	public static final String CHINESE_REGEX = "^[\u4e00-\u9f5a]+$";
+	
+	/**
+	 * 匹配正整数的正则表达式，个数限制为一个或多个
+	 */
+	public static final String POSITIVE_INTEGER_REGEX = "^\\d+$";
+	
+	/**
+	 * 匹配身份证号的正则表达式
+	 */
+	public static final String ID_CARD = "^(^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$)|(^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])((\\d{4})|\\d{3}[Xx])$)$";
+	
+	/**
+	 * 匹配邮编的正则表达式
+	 */
+	public static final String ZIP_CODE = "^\\d{6}$";
+	
+	/**
+	 * 匹配URL的正则表达式
+	 */
+	public static final String URL = "^(([hH][tT]{2}[pP][sS]?)|([fF][tT][pP]))\\:\\/\\/[wW]{3}\\.[\\w-]+\\.\\w{2,4}(\\/.*)?$";
+	
 
     /**
      * 不可实例化
@@ -269,6 +312,15 @@ public final class RegUtils {
 				+ "\u002e\u003b\u002c\u003a\u0027\u0028\u0029\u002f\u0021\u003f\u003c\u003e\r\n"
 				+ "]+$";
 		return canMatch(toCheckStr, patternStr);
+	}
+	
+	/**
+	 * 匹配给定的字符串是否是一个全网IP
+	 * @param string 给定的字符串
+	 * @return true：是
+	 */
+	public static boolean isIp(String string){
+		return string.matches(IP_REGEX);
 	}
 
 	/**

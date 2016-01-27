@@ -8,24 +8,18 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * 测试  
- * 2015-12-28
- * @author Administrator
- *
- */
 public class MainActivity extends BaseActivity implements OnClickListener {
 
 	private TextView tv;
 	private ImageView img;
-	String s = "13213213212131313132123";
+	private String s = "13213213212131313132123";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	}
-	
+
 	@Override
 	public void initView() {
 		super.initView();
@@ -52,13 +46,13 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		case R.id.button4:
 			
 			break;
-		default:  
+		default:
 		}
 	}
 
 	class Person {
 		int age;
-
+  
 		@Override
 		public String toString() {
 			return "Person [age=" + age + ", name=" + name + ", score=" + score

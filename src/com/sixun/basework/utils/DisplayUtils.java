@@ -3,13 +3,12 @@ package com.sixun.basework.utils;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
-import android.view.Surface;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 /**
  * 系统显示相关工具类
@@ -170,102 +169,40 @@ public class DisplayUtils {
 		return bp;
 
 	}
-
+	
 	/**
-	 * 关闭输入法
-	 * 
-	 * @param act
+	 * 为给定的编辑器开启软键盘
+	 * @param context 
+	 * @param editText 给定的编辑器
 	 */
-	// public static void closeInputMethod(Activity act) {
-	// View view = act.getCurrentFocus();
-	// if (view != null) {
-	// ((InputMethodManager)
-	// mApplicationContent.getSystemService(Context.INPUT_METHOD_SERVICE))
-	// .hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-	// }
-	// }
-
-	/**
-	 * 打卡软键盘
-	 * 
-	 * @param Activity
-	 *            act
-	 */
-	public static void openKeybord(Activity act) {
-		View view = act.getCurrentFocus();
-		InputMethodManager imm = (InputMethodManager) mApplicationContent
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.showSoftInput(view, InputMethodManager.RESULT_SHOWN);
-		imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-				InputMethodManager.HIDE_IMPLICIT_ONLY);
+	public static void openSoftKeyboard(Context context, EditText editText){
+		editText.requestFocus();
+		InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(
+				Context.INPUT_METHOD_SERVICE);
+		inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		ViewUtils.setEditTextSelectionToEnd(editText);
 	}
-
+	
 	/**
 	 * 关闭软键盘
-	 * 
-	 * @param Activity
-	 *            act
-	 */
-	public static void closeKeybord(Activity act) {
-		View view = act.getCurrentFocus();
-		InputMethodManager imm = (InputMethodManager) mApplicationContent
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-	}
-
-	/**
-	 * 切换键盘,如果键盘是可见的,那么隐藏它,如果它是不可见的，那么显示它
-	 *
 	 * @param context
-	 *            上下文
 	 */
-	public static void toggleKeyboard() {
-		InputMethodManager imm = (InputMethodManager) mApplicationContent
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		if (imm.isActive()) {//是否打开
-			imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT,
-					InputMethodManager.HIDE_NOT_ALWAYS);
+	public static void closeSoftKeyboard(Activity activity){
+		InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
+				Context.INPUT_METHOD_SERVICE);
+		//如果软键盘已经开启
+		if(inputMethodManager.isActive()){
+			inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
-
+	
 	/**
-	 * 获取当前窗口的旋转角度
-	 *
-	 * @param activity
-	 * @return
-	 */
-	public static int getDisplayRotation(Activity activity) {
-		switch (activity.getWindowManager().getDefaultDisplay().getRotation()) {
-		case Surface.ROTATION_0:
-			return 0;
-		case Surface.ROTATION_90:
-			return 90;
-		case Surface.ROTATION_180:
-			return 180;
-		case Surface.ROTATION_270:
-			return 270;
-		default:
-			return 0;
-		}
-	}
-
-	/**
-	 * 当前是否是横屏
-	 *
+	 * 切换软键盘的状态
 	 * @param context
-	 * @return
 	 */
-	public static final boolean isLandscape(Context context) {
-		return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-	}
-
-	/**
-	 * 当前是否是竖屏
-	 *
-	 * @param context
-	 * @return
-	 */
-	public static final boolean isPortrait(Context context) {
-		return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+	public static void toggleSoftKeyboardState(Context context){
+		((InputMethodManager) context.getSystemService(
+				Context.INPUT_METHOD_SERVICE)).toggleSoftInput(
+				InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 }

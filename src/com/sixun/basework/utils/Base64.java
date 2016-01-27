@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 /**
  * 加密解密
- * 
- * @author lin
  *
  */
 public class Base64 {

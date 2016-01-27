@@ -13,7 +13,6 @@ import java.net.URL;
 /**
  * 最原始的Http请求的工具类
  * 
- * @author zhy
  * 
  */
 public class HttpUtils {

@@ -12,7 +12,6 @@ import android.view.animation.TranslateAnimation;
 /**
  * 动画工具类
  *
- * @author lin
  */
 public final class AnimationUtils {
 
