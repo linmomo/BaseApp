@@ -57,6 +57,36 @@ public final class WindowUtils {
                 return 0;
         }
     }
+    
+    /**
+     * 设置当前界面为全屏模式
+     */
+    public static void setFullScreen(Activity activity) {
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    }
+
+    /**
+     * 如果当前为全屏，那么取消全屏模式，回到正常的模式
+     */
+    public static void cancelFullScreen(Activity activity) {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    /**
+     * 判断当前手机是否是全屏
+     *
+     * @return 如果是true，那么当前就是全屏
+     */
+    public static boolean isFullScreen(Activity activity) {
+        int flag = activity.getWindow().getAttributes().flags;
+        if ((flag & WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * 当前是否是横屏
@@ -77,6 +107,7 @@ public final class WindowUtils {
     public static final boolean isPortrait(Context context) {
         return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
+    
     /**
      *  调整窗口的透明度  1.0f,0.5f 变暗
      * @param from  from>=0&&from<=1.0f

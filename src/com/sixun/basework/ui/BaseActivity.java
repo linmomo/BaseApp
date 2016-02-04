@@ -11,12 +11,13 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class BaseActivity extends FragmentActivity {
+public abstract class BaseActivity extends FragmentActivity {
 	
-	public Activity mActivity;
-	public Context mContext;
-	public ViewFinder fv;
-	private boolean mIsInitData;  //是否初始化数据
+	protected String TAG = getClass().getSimpleName();
+	protected Activity mActivity;
+	protected Context mContext;
+	protected ViewFinder fv;
+	protected boolean mIsInitData;  //是否初始化数据
 	
 	/**
 	 * 初始化全局变量
@@ -28,6 +29,7 @@ public class BaseActivity extends FragmentActivity {
 		this.mActivity=this;
 		this.mContext=this;
 		this.fv = new ViewFinder(this.mActivity);
+		initData();
 	}
 	
 	/**
@@ -37,7 +39,6 @@ public class BaseActivity extends FragmentActivity {
 	public void setContentView(int layoutResID) {
 		super.setContentView(layoutResID);
 		L.e("setContentView");
-		initData();
 		initView();
 	}
 	
@@ -91,13 +92,20 @@ public class BaseActivity extends FragmentActivity {
 	}
 	
 	/**
-	 * 初始化控件
-	 */
-	protected void initView(){}
-	/**
-	 * 初始化数据, 可以不实现
+	 * 初始化页面数据,无关view, 可以不实现
 	 */
 	protected void initData() {}
+	
+	/**
+	 * 初始化控件
+	 */
+	protected abstract void initView();
+	
+	/**
+	 * 设置view
+	 */
+	protected void setView() {};
+	
 	
 	  /** 
      * 获取TextView中的文本信息 

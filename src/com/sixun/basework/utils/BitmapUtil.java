@@ -91,31 +91,32 @@ public final class BitmapUtil {
      * @param reqWidth  目标宽度,这里的宽高只是阀值，实际显示的图片将小于等于这个值
      * @param reqHeight 目标高度,这里的宽高只是阀值，实际显示的图片将小于等于这个值
      */
-    public static BitmapFactory.Options calculateInSampleSize(
-            final BitmapFactory.Options options, final int reqWidth,
-            final int reqHeight) {
-        // 源图片的高度和宽度
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-        if (height > 400 || width > 450) {
-            if (height > reqHeight || width > reqWidth) {
-                // 计算出实际宽高和目标宽高的比率
-                final int heightRatio = Math.round((float) height
-                        / (float) reqHeight);
-                final int widthRatio = Math.round((float) width
-                        / (float) reqWidth);
-                // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
-                // 一定都会大于等于目标的宽和高。
-                inSampleSize = heightRatio < widthRatio ? heightRatio
-                        : widthRatio;
-            }
-        }
-        // 设置压缩比例
-        options.inSampleSize = inSampleSize;
-        options.inJustDecodeBounds = false;
-        return options;
-    }
+//    public static BitmapFactory.Options calculateInSampleSize(
+//            final BitmapFactory.Options options, final int reqWidth,
+//            final int reqHeight) {
+//        // 源图片的高度和宽度
+//        final int height = options.outHeight;
+//        final int width = options.outWidth;
+//        int inSampleSize = 1;
+//        if (height > 400 || width > 450) {
+//            if (height > reqHeight || width > reqWidth) {
+//                // 计算出实际宽高和目标宽高的比率
+//                final int heightRatio = Math.round((float) height
+//                        / (float) reqHeight);
+//                final int widthRatio = Math.round((float) width
+//                        / (float) reqWidth);
+//                // 选择宽和高中最小的比率作为inSampleSize的值，这样可以保证最终图片的宽和高
+//                // 一定都会大于等于目标的宽和高。
+//                inSampleSize = heightRatio < widthRatio ? heightRatio
+//                        : widthRatio;
+//            }
+//        }
+//        // 设置压缩比例
+//        options.inSampleSize = inSampleSize;
+//        options.inJustDecodeBounds = false;
+//        return options;
+//    }
+    
     
     /** 
      *	图片按比例大小压缩，指定宽高 （使用Options的方法）
@@ -229,7 +230,7 @@ public final class BitmapUtil {
      * @param maxSize 目标将被压缩成比该尺寸更小。单位KB 
      * @throws IOException  
      */  
-    public void compress(Bitmap image,int maxSize){ 
+    public void compressImage(Bitmap image,int maxSize){ 
     	 // 将bitmap放至数组中，意在获得bitmap的大小（与实际读取的原文件要大）
         ByteArrayOutputStream os = new ByteArrayOutputStream();  
         // 缩放  
@@ -268,56 +269,102 @@ public final class BitmapUtil {
 		if (bitmap == null) {
 			return 0;
 		}
-		int bitmapSize = 0;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-			bitmapSize = bitmap.getByteCount();
-		} else {
-			bitmapSize = bitmap.getRowBytes() * bitmap.getHeight(); // HC-MR1 以前
-		}
-		return bitmapSize;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {    //API 19
+            return bitmap.getAllocationByteCount();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {//API 12
+            return bitmap.getByteCount();
+        }
+        // 在低版本中用一行的字节x高度
+        return bitmap.getRowBytes() * bitmap.getHeight();                //earlier version
 	}
     
     //------------------各个途径获得指定大小的bitmap-----------------------------
 
-	/**
-	 * 根据文件路径获得bitmap
-	 * 
-	 * @param imgPath 图片路径
-	 * @return
-	 */
-	 public static Bitmap getBitmapFromPath(String pathName) {  
-	       // Get bitmap through image path  
-	       BitmapFactory.Options newOpts = new BitmapFactory.Options();  
-	       newOpts.inJustDecodeBounds = false;  
-	       newOpts.inPurgeable = true;  
-	       newOpts.inInputShareable = true; //。当系统内存不够时候图片自动被回收  
-	       // Do not compress  
-	       newOpts.inSampleSize = 1;  
-	       newOpts.inPreferredConfig = Config.RGB_565;
-	       return BitmapFactory.decodeFile(pathName, newOpts);  
-	   }
-	 
 	
+	 private static int mDesiredWidth;
+
+	 private static int mDesiredHeight;
+	    
 	 /**
-     * 获取一个指定大小的bitmap来自输入流,带padding
+     * 计算目标宽度，目标高度，inSampleSize
      *
-     * @param is         从输入流中读取Bitmap
-     * @param outPadding 如果不为null，则返回填充bitmap，如果它存在，否则设置填充为[-1，-1，-1，-1]。
-     * 					 如果没有位图返回（空），那么填充不变。
-     * @param reqWidth   目标宽度
-     * @param reqHeight  目标高度
+     * @return BitmapFactory.Options对象
      */
-    public static Bitmap getBitmapFromStream(InputStream is, Rect outPadding,
-                                             int reqWidth, int reqHeight) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(is, outPadding, options);
-        options = calculateInSampleSize(options, reqWidth, reqHeight);
-        return BitmapFactory.decodeStream(is, outPadding, options);
+    private static BitmapFactory.Options getBestOptions(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // 读取图片长宽
+        int actualWidth = options.outWidth;
+        int actualHeight = options.outHeight;
+        // Then compute the dimensions we would ideally like to decode to.
+        mDesiredWidth = getResizedDimension(reqWidth, reqHeight, actualWidth, actualHeight);
+        mDesiredHeight = getResizedDimension(reqHeight, reqWidth, actualHeight, actualWidth);
+        // 根据现在得到计算inSampleSize
+        options.inSampleSize = calculateBestInSampleSize(actualWidth, actualHeight, mDesiredWidth, mDesiredHeight);
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return options;
     }
-	
+    
     /**
-     * 获取一个指定大小的bitmap来自资源
+     * Scales one side of a rectangle to fit aspect ratio. 最终得到重新测量的尺寸
+     *
+     * @param maxPrimary      Maximum size of the primary dimension (i.e. width for max
+     *                        width), or zero to maintain aspect ratio with secondary
+     *                        dimension
+     * @param maxSecondary    Maximum size of the secondary dimension, or zero to maintain
+     *                        aspect ratio with primary dimension
+     * @param actualPrimary   Actual size of the primary dimension
+     * @param actualSecondary Actual size of the secondary dimension
+     */
+    private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary, int actualSecondary) {
+        double ratio = (double) actualSecondary / (double) actualPrimary;
+        int resized = maxPrimary;
+        if (resized * ratio > maxSecondary) {
+            resized = (int) (maxSecondary / ratio);
+        }
+        return resized;
+    }
+    
+    /**
+     * Returns the largest power-of-two divisor for use in downscaling a bitmap
+     * that will not result in the scaling past the desired dimensions.
+     * 计算最佳的压缩比例
+     *
+     * @param actualWidth   实际的图片宽度
+     * @param actualHeight  实际的图片高度
+     * @param desiredWidth  需求的图片宽度
+     * @param desiredHeight 需求的图片高度
+     */
+    // Visible for testing.
+    private static int calculateBestInSampleSize(int actualWidth, int actualHeight, int desiredWidth, int desiredHeight) {
+        double wr = (double) actualWidth / desiredWidth;
+        double hr = (double) actualHeight / desiredHeight;
+        double ratio = Math.min(wr, hr);
+        float inSampleSize = 1.0f;
+        while ((inSampleSize * 2) <= ratio) {
+            inSampleSize *= 2;
+        }
+
+        return (int) inSampleSize;
+    }
+    
+	/**
+     * 通过传入的bitmap，进行压缩，得到符合标准的bitmap
+     */
+    private static Bitmap createScaleBitmap(Bitmap tempBitmap, int desiredWidth, int desiredHeight) {
+        // If necessary, scale down to the maximal acceptable size.
+        if (tempBitmap != null && (tempBitmap.getWidth() > desiredWidth || tempBitmap.getHeight() > desiredHeight)) {
+            // 如果是放大图片，filter决定是否平滑，如果是缩小图片，filter无影响
+            Bitmap bitmap = Bitmap.createScaledBitmap(tempBitmap, desiredWidth, desiredHeight, true);
+            tempBitmap.recycle(); // 释放Bitmap的native像素数组
+            return bitmap;
+        } else {
+            return tempBitmap; // 如果没有缩放，那么不回收
+        }
+    }	
+	 
+    /**
+     *  从Resources中加载图片
      *
      * @param res       Resources
      * @param resId     图片ID
@@ -326,36 +373,40 @@ public final class BitmapUtil {
      */
     public static Bitmap getBitmapFromResource(Resources res, int resId,
                                                int reqWidth, int reqHeight) {
-        // BitmapFactory.Options options = new BitmapFactory.Options();
-        // options.inJustDecodeBounds = true;
-        // BitmapFactory.decodeResource(res, resId, options);
-        // options = BitmapHelper.calculateInSampleSize(options, reqWidth,
-        // reqHeight);
-        // return BitmapFactory.decodeResource(res, resId, options);
+         BitmapFactory.Options options = new BitmapFactory.Options();
+         // 设置成了true,不占用内存，只获取bitmap宽高
+         options.inJustDecodeBounds = true;
+         // 初始化options对象
+         BitmapFactory.decodeResource(res, resId, options);
+         // 得到计算好的options，目标宽、目标高
+         options = getBestOptions(options, reqWidth, reqHeight);
+         Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
+         return createScaleBitmap(src, mDesiredWidth, mDesiredHeight); // 进一步得到目标大小的缩略图
 
         // 通过JNI的形式读取本地图片达到节省内存的目的
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inPurgeable = true;
-        options.inInputShareable = true;
-        InputStream is = res.openRawResource(resId);
-        //将资源文件转化成输入流，调用从输入流中获取图片的方法
-        return getBitmapFromStream(is, null, reqWidth, reqHeight);
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inPreferredConfig = Bitmap.Config.RGB_565;
+//        options.inPurgeable = true;
+//        options.inInputShareable = true;
+//        InputStream is = res.openRawResource(resId);
+//        //将资源文件转化成输入流，调用从输入流中获取图片的方法
+//        return getBitmapFromStream(is, null, reqWidth, reqHeight);
     }
 
     /**
-     * 获取一个指定大小的bitmap来自文件
+     * 从SD卡上加载图片
      *
      * @param reqWidth  目标宽度
      * @param reqHeight 目标高度
      */
-    public static Bitmap getBitmapFromFile(String pathName, int reqWidth,
-                                           int reqHeight) {
+    public static Bitmap getBitmapFromFile(String pathName, int reqWidth,int reqHeight) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        options = calculateInSampleSize(options, reqWidth, reqHeight);
-        return BitmapFactory.decodeFile(pathName, options);
+//        options = calculateInSampleSize(options, reqWidth, reqHeight);
+        options = getBestOptions(options, reqWidth, reqHeight);
+        Bitmap src = BitmapFactory.decodeFile(pathName, options);
+        return createScaleBitmap(src, mDesiredWidth, mDesiredHeight);
     }
 
     /**
@@ -372,9 +423,29 @@ public final class BitmapUtil {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(data, offset, length, options);
-        options = calculateInSampleSize(options, reqWidth, reqHeight);
+//        options = calculateInSampleSize(options, reqWidth, reqHeight);
+        options = getBestOptions(options, reqWidth, reqHeight);
         return BitmapFactory.decodeByteArray(data, offset, length, options);
     }
+    
+	 /**
+    * 获取一个指定大小的bitmap来自输入流,带padding
+    *
+    * @param is         从输入流中读取Bitmap
+    * @param outPadding 如果不为null，则返回填充bitmap，如果它存在，否则设置填充为[-1，-1，-1，-1]。
+    * 					 如果没有位图返回（空），那么填充不变。
+    * @param reqWidth   目标宽度
+    * @param reqHeight  目标高度
+    */
+   public static Bitmap getBitmapFromStream(InputStream is, Rect outPadding,
+                                            int reqWidth, int reqHeight) {
+       BitmapFactory.Options options = new BitmapFactory.Options();
+       options.inJustDecodeBounds = true;
+       BitmapFactory.decodeStream(is, outPadding, options);
+//       options = calculateInSampleSize(options, reqWidth, reqHeight);
+       options = getBestOptions(options, reqWidth, reqHeight);
+       return BitmapFactory.decodeStream(is, outPadding, options);
+   }
 
     /**
      * 获取一个指定大小的bitmap来自输入流

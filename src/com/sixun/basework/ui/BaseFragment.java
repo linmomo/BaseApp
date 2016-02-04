@@ -38,7 +38,6 @@ public abstract class BaseFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		initData();
-		
 	}
 	
 	// 子类必须实现初始化布局的方法
