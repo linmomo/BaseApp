@@ -169,6 +169,30 @@ public class DisplayUtils {
 		return bp;
 
 	}
+
+    /**
+     * 获取视图在屏幕中的位置
+     *
+     * @param view 要获取坐标的视图
+     * @return 返回一个含有2个元素的数组, 第一个元素是x坐标、第二个为y坐标
+     */
+    public static int[] getViewLocationInScreen(View view) {
+        int[] loc = new int[2];
+        view.getLocationOnScreen(loc);
+        return loc;
+    }
+
+    /**
+     * 获取视图在一个Window中的位置
+     *
+     * @param view 要获取坐标的视图
+     * @return 返回一个含有2个元素的数组, 第一个元素是x坐标、第二个为y坐标
+     */
+    public static int[] getViewLocationInWindow(View view) {
+        int[] loc = new int[2];
+        view.getLocationInWindow(loc);
+        return loc;
+    }
 	
 	/**
 	 * 为给定的编辑器开启软键盘
