@@ -1,7 +1,6 @@
 package com.sixun.basework.ui;
 
 import com.sixun.basework.utils.L;
-import com.sixun.basework.utils.ToastUtils;
 import com.sixun.basework.utils.ViewFinder;
 
 import android.app.Activity;
@@ -127,43 +126,4 @@ public abstract class BaseActivity extends FragmentActivity {
         return et.getText().toString().trim();  
     }  
     
-    /**
-     * 长时间显示
-     * @param String message
-     */
-    protected void longMsg(String message){
-    	if(isFinishing())
-    		return;
-    	ToastUtils.customLong(this.mContext, message);
-    }
-    
-    /**
-     * 长时间显示
-     * @param Int message
-     */
-    protected void longMsg(int message){
-    	if(isFinishing())
-    		return;
-    	ToastUtils.customLong(this.mContext, getResources().getString(message));
-    }
-    
-    /**
-     * 短时间显示
-     * @param String message
-     */
-    protected void shortMsg(String message){
-    	if(isFinishing())
-    		return;
-    	ToastUtils.customLong(this.mContext, message);
-    }
-    
-    /**
-     * 短时间显示
-     * @param Int message
-     */
-    protected void shortMsg(int message){
-    	if(isFinishing())
-    		return;
-    	ToastUtils.customLong(this.mContext, getResources().getString(message));
-    }
 }
